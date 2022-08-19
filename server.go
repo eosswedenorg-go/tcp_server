@@ -41,6 +41,17 @@ func (s *server) Connect() error {
     return err
 }
 
+func (s *server) Close() error {
+    if s.listener != nil {
+        err := s.listener.Close()
+        if err != nil {
+            s.listener = nil
+        }
+        return err
+    }
+    return nil
+}
+
 func (s *server) Listen() error {
 
     if s.listener == nil {
@@ -49,7 +60,7 @@ func (s *server) Listen() error {
             return err
         }
     }
-    defer s.listener.Close()
+    defer s.Close()
 
     for {
         conn, _ := s.listener.Accept()
