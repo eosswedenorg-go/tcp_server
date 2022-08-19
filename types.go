@@ -12,6 +12,7 @@ type Client struct {
 }
 
 type server struct {
+    listener        net.Listener
     address         string
     onConnect       func(c *Client)
     onDisconnect    func(c *Client, err error)
