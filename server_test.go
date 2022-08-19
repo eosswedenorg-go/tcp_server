@@ -4,6 +4,7 @@ package tcp_server
 import (
     "net"
     "sync"
+    "time"
 
     "testing"
     "github.com/stretchr/testify/assert"
@@ -61,6 +62,9 @@ func TestPingPong(t *testing.T) {
     })
 
     go server.Listen()
+
+    // Add some wait so the server has time to start before we connect.
+    time.Sleep(time.Second)
 
     conn, err := net.Dial("tcp", server_addr)
     if err != nil {
