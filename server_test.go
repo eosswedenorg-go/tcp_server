@@ -6,9 +6,33 @@ import (
     "sync"
 
     "testing"
+    "github.com/stretchr/testify/assert"
 )
 
-var server_addr = "localhost:9989"
+var server_addr = "127.0.0.1:9989"
+
+func TestConnectOK(t *testing.T) {
+
+    server := New(server_addr)
+    err := server.Connect()
+    assert.NoError(t, err)
+    server.Close()
+}
+
+func TestConnectFail(t *testing.T) {
+
+    // Start a blocking server on the same port.
+    blocking_server, err := net.Listen("tcp", server_addr)
+    assert.NoError(t, err)
+    defer blocking_server.Close()
+
+    server := New(server_addr)
+
+    err = server.Connect()
+    defer server.Close()
+    assert.Error(t, err)
+    assert.Equal(t, err.Error(), "listen tcp " + server_addr + ": bind: address already in use")
+}
 
 func TestPingPong(t *testing.T) {
 
