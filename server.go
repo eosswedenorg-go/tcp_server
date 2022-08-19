@@ -33,16 +33,26 @@ func (s *server) OnDisconnect(callback func(c *Client, err error)) {
     s.onDisconnect = callback
 }
 
+func (s *server) Connect() error {
+    l, err := net.Listen("tcp", s.address)
+    if err == nil {
+        s.listener = l
+    }
+    return err
+}
+
 func (s *server) Listen() error {
 
-    sock, err := net.Listen("tcp", s.address)
-    if err != nil {
-        return err
+    if s.listener == nil {
+        err := s.Connect()
+        if err != nil {
+            return err
+        }
     }
-    defer sock.Close()
+    defer s.listener.Close()
 
     for {
-        conn, _ := sock.Accept()
+        conn, _ := s.listener.Accept()
         c := &Client{
             conn:   conn,
             Server: s,
