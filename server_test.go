@@ -35,6 +35,21 @@ func TestConnectFail(t *testing.T) {
     assert.Equal(t, err.Error(), "listen tcp " + server_addr + ": bind: address already in use")
 }
 
+func TestClose(t *testing.T) {
+
+    server := New(server_addr)
+    err := server.Connect()
+
+    assert.NoError(t, err)
+    assert.True(t, server.IsStarted())
+
+    err = server.Close()
+
+    assert.NoError(t, err)
+    assert.False(t, server.IsStarted())
+}
+
+
 func TestIsStartedTrue(t *testing.T) {
 
     server := New(server_addr)
