@@ -48,7 +48,7 @@ func (s *server) IsStarted() bool {
 func (s *server) Close() error {
     if s.IsStarted() {
         err := s.listener.Close()
-        if err != nil {
+        if err == nil {
             s.listener = nil
         }
         return err
@@ -76,6 +76,4 @@ func (s *server) Listen() error {
         s.onConnect(c)
         go c.read()
     }
-
-    return nil
 }
