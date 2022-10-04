@@ -93,6 +93,7 @@ func TestPingPong(t *testing.T) {
     })
 
     go server.Listen()
+    defer server.Close()
 
     // Add some wait so the server has time to start before we connect.
     time.Sleep(time.Second)
