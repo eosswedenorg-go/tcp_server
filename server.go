@@ -47,13 +47,17 @@ func (s *server) IsStarted() bool {
 
 func (s *server) Close() error {
     if s.IsStarted() {
-        err := s.listener.Close()
-        if err == nil {
-            s.listener = nil
-        }
-        return err
+        return s.exit()
     }
     return nil
+}
+
+func (s *server) exit() error {
+    err := s.listener.Close()
+    if err == nil {
+        s.listener = nil
+    }
+    return err
 }
 
 func (s *server) Listen() error {
@@ -64,7 +68,7 @@ func (s *server) Listen() error {
             return err
         }
     }
-    defer s.Close()
+    defer s.exit()
 
     for {
         conn, err := s.listener.Accept()
