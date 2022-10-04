@@ -92,7 +92,7 @@ func TestPingPong(t *testing.T) {
         wg.Done()
     })
 
-    go server.Listen()
+    server.Listen()
     defer server.Close()
 
     // Add some wait so the server has time to start before we connect.

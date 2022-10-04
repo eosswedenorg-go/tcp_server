@@ -60,21 +60,14 @@ func (s *server) exit() error {
     return err
 }
 
-func (s *server) Listen() error {
-
-    if ! s.IsStarted() {
-        err := s.Connect()
-        if err != nil {
-            return err
-        }
-    }
-    defer s.exit()
+func (s *server) listenerLoop() {
 
     for {
         conn, err := s.listener.Accept()
         if err != nil {
-            return err
+            break
         }
+
         c := &Client{
             conn:   conn,
             Server: s,
@@ -83,4 +76,18 @@ func (s *server) Listen() error {
         s.onConnect(c)
         go c.read()
     }
+
+    s.exit()
+}
+
+func (s *server) Listen() {
+
+    if ! s.IsStarted() {
+        err := s.Connect()
+        if err != nil {
+            return
+        }
+    }
+
+    go s.listenerLoop()
 }
