@@ -80,14 +80,15 @@ func (s *server) listenerLoop() {
     s.exit()
 }
 
-func (s *server) Listen() {
+func (s *server) Listen() error {
 
     if ! s.IsStarted() {
         err := s.Connect()
         if err != nil {
-            return
+            return err
         }
     }
 
     go s.listenerLoop()
+    return nil
 }
