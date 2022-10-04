@@ -67,7 +67,10 @@ func (s *server) Listen() error {
     defer s.Close()
 
     for {
-        conn, _ := s.listener.Accept()
+        conn, err := s.listener.Accept()
+        if err != nil {
+            return err
+        }
         c := &Client{
             conn:   conn,
             Server: s,
