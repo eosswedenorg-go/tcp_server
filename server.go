@@ -1,8 +1,7 @@
-
 package tcp_server
 
 import (
-    "net"
+	"net"
 )
 
 func New(address string) *server {
@@ -46,8 +45,14 @@ func (s *server) IsStarted() bool {
 }
 
 func (s *server) Close() error {
+
     if s.IsStarted() {
-        return s.exit()
+        // Close the listener.
+        err := s.exit()
+
+        // Wait for go routines to exit.
+        s.wg.Wait()
+        return err
     }
     return nil
 }
@@ -62,7 +67,11 @@ func (s *server) exit() error {
 
 func (s *server) listenerLoop() {
 
+    defer s.wg.Done()
+
     for {
+        // This blocks until an client is accepted
+        // or s.listener.Close() is called.
         conn, err := s.listener.Accept()
         if err != nil {
             break
@@ -76,8 +85,6 @@ func (s *server) listenerLoop() {
         s.onConnect(c)
         go c.read()
     }
-
-    s.exit()
 }
 
 func (s *server) Listen() error {
@@ -89,6 +96,7 @@ func (s *server) Listen() error {
         }
     }
 
+    s.wg.Add(1)
     go s.listenerLoop()
     return nil
 }

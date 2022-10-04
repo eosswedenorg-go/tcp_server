@@ -3,6 +3,7 @@ package tcp_server
 
 import (
     "net"
+    "sync"
 )
 
 // Struct that represents a client connection
@@ -25,6 +26,9 @@ type server struct {
 
     // Address to bind the server on
     address         string
+
+    // WaitGroup to make all go routines exit gracefully.
+    wg              sync.WaitGroup
 
     // Callback functions
     onConnect       func(c *Client)
