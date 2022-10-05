@@ -4,6 +4,7 @@ package tcp_server
 import (
     "net"
     "sync"
+    "sync/atomic"
     "time"
 
     "testing"
@@ -125,4 +126,43 @@ func TestPingPong(t *testing.T) {
     if pingMsg != "ping\n" {
         t.Fatal("Server not receive the ping message")
     }
+}
+
+func TestGracefullClientShutdown(t *testing.T) {
+
+    server := New(server_addr)
+    var count int32 = 0;
+    var max int32 = 10;
+
+    var wg sync.WaitGroup
+
+    wg.Add(int(max))
+
+    server.Listen()
+
+    // Add some wait so the server has time to start before we connect.
+    time.Sleep(time.Second)
+
+    // Spawn a bunch of clients.
+    for i := int32(0); i < max; i++ {
+        conn, err := net.Dial("tcp", server_addr)
+        if err != nil {
+            t.Fatal("Failed to connect to test server")
+        }
+
+        // Spawn a go routine that should block until server.Close() is called.
+        go func() {
+            b := make([]byte, 1)
+            conn.Read(b)
+            atomic.AddInt32(&count, 1)
+            wg.Done()
+        }()
+    }
+
+    err := server.Close()
+    assert.NoError(t, err)
+
+    wg.Wait()
+
+    assert.Equal(t, count, max, "not all clients where gracefully disconnected, expected: %d but got %d", max, count)
 }
