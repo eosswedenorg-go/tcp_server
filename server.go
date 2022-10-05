@@ -96,6 +96,7 @@ func (s *server) Listen() error {
         }
     }
 
+    s.running = true
     s.wg.Add(1)
     go s.listenerLoop()
     return nil
