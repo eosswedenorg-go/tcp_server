@@ -8,11 +8,13 @@ import (
 
 // Read client messages.
 func (c *Client) read() {
+
+    defer c.Close()
+
     reader := bufio.NewReader(c.conn)
     for {
         message, err := reader.ReadString('\n')
         if err != nil {
-            c.conn.Close()
             c.Server.onDisconnect(c, err)
             return
         }
