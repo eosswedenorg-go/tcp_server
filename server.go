@@ -81,6 +81,7 @@ func (s *server) listenerLoop() {
             Server: s,
             Addr:   conn.RemoteAddr(),
         }
+        s.wg.Add(1)
         s.onConnect(c)
         go c.read()
     }

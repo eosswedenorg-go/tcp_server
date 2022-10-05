@@ -10,9 +10,10 @@ import (
 func (c *Client) read() {
 
     defer c.Close()
+    defer c.Server.wg.Done()
 
     reader := bufio.NewReader(c.conn)
-    for {
+    for c.Server.running {
         message, err := reader.ReadString('\n')
         if err != nil {
             c.Server.onDisconnect(c, err)
@@ -20,6 +21,8 @@ func (c *Client) read() {
         }
         c.Server.onMessage(c, message)
     }
+
+    c.Server.onDisconnect(c, nil)
 }
 
 // Write string to client.
