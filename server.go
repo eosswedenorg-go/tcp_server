@@ -46,22 +46,21 @@ func (s *server) IsStarted() bool {
 
 func (s *server) Close() error {
 
-    if s.IsStarted() {
-        // Close the listener.
-        err := s.exit()
-
-        // Wait for go routines to exit.
-        s.wg.Wait()
-        return err
+    if ! s.IsStarted() {
+        return nil
     }
-    return nil
-}
 
-func (s *server) exit() error {
+    // set running to false
+    s.running = false
+
+    // Close the listener.
     err := s.listener.Close()
-    if err == nil {
-        s.listener = nil
-    }
+
+    // Wait for go routines to exit.
+    s.wg.Wait()
+
+    // Cleanup
+    s.listener = nil
     return err
 }
 
