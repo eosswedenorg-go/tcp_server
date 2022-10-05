@@ -38,6 +38,7 @@ func (c *Client) WriteString(message string) error {
 
 // Write bytes to client
 func (c *Client) Write(b []byte) error {
+    c.conn.SetWriteDeadline(time.Now().Add(5 * time.Second))
     _, err := c.conn.Write(b)
     if err != nil {
         c.conn.Close()
