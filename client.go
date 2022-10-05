@@ -4,6 +4,7 @@ package tcp_server
 import (
     "bufio"
     "net"
+    "time"
 )
 
 // Read client messages.
@@ -12,8 +13,13 @@ func (c *Client) read() {
     defer c.Close()
     defer c.Server.wg.Done()
 
+    timeout := 100 * time.Millisecond
+
     reader := bufio.NewReader(c.conn)
     for c.Server.running {
+
+        c.conn.SetReadDeadline(time.Now().Add(timeout))
+
         message, err := reader.ReadString('\n')
         if err != nil {
             c.Server.onDisconnect(c, err)
