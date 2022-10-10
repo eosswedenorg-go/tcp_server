@@ -36,6 +36,21 @@ func TestConnectFail(t *testing.T) {
     assert.Equal(t, err.Error(), "listen tcp " + server_addr + ": bind: address already in use")
 }
 
+func TestListenConnectFail(t *testing.T) {
+
+    // Start a blocking server on the same port.
+    blocking_server, err := net.Listen("tcp", server_addr)
+    assert.NoError(t, err)
+    defer blocking_server.Close()
+
+    server := New(server_addr)
+
+    err = server.Listen()
+    defer server.Close()
+    assert.Error(t, err)
+    assert.Equal(t, err.Error(), "listen tcp " + server_addr + ": bind: address already in use")
+}
+
 func TestClose(t *testing.T) {
 
     server := New(server_addr)
