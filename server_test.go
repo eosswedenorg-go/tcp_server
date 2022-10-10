@@ -82,10 +82,11 @@ func TestPingPong(t *testing.T) {
 
     server.OnMessage(func (c *Client, message string) {
         pingMsg = message
-        err := c.WriteString("pong\n")
+        n, err := c.WriteString("pong\n")
         if err != nil {
             t.Fatal("Failed to write pong message")
         }
+        assert.Equal(t, n, 5)
         wg.Done()
     })
 

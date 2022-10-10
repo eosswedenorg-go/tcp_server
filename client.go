@@ -32,19 +32,19 @@ func (c *Client) read() {
 }
 
 // Write string to client.
-func (c *Client) WriteString(message string) error {
+func (c *Client) WriteString(message string) (int, error) {
     return c.Write([]byte(message))
 }
 
 // Write bytes to client
-func (c *Client) Write(b []byte) error {
+func (c *Client) Write(b []byte) (int, error) {
     c.conn.SetWriteDeadline(time.Now().Add(5 * time.Second))
-    _, err := c.conn.Write(b)
+    n, err := c.conn.Write(b)
     if err != nil {
         c.conn.Close()
         c.Server.onDisconnect(c, err)
     }
-    return err
+    return n, err
 }
 
 func (c *Client) Conn() net.Conn {
