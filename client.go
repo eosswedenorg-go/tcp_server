@@ -6,6 +6,18 @@ import (
 	"time"
 )
 
+// Struct that represents a client connection
+type Client struct {
+	// Actual network connections.
+	conn net.Conn
+
+	// Client address
+	Addr net.Addr
+
+	// Pointer to server object.
+	Server *Server
+}
+
 // Read client messages.
 func (c *Client) read() {
 	defer c.Close()
