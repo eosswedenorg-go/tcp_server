@@ -1,6 +1,7 @@
 package tcp_server
 
 import (
+	"io"
 	"net"
 	"sync"
 	"sync/atomic"
@@ -100,7 +101,8 @@ func TestPingPong(t *testing.T) {
 		wg.Done()
 	})
 
-	server.Listen()
+	err := server.Listen()
+	assert.NoError(t, err)
 	defer server.Close()
 
 	// Add some wait so the server has time to start before we connect.
@@ -144,7 +146,8 @@ func TestGracefullClientShutdown(t *testing.T) {
 
 	wg.Add(int(max))
 
-	server.Listen()
+	err := server.Listen()
+	assert.NoError(t, err)
 
 	// Add some wait so the server has time to start before we connect.
 	time.Sleep(time.Second)
@@ -159,13 +162,14 @@ func TestGracefullClientShutdown(t *testing.T) {
 		// Spawn a go routine that should block until server.Close() is called.
 		go func() {
 			b := make([]byte, 1)
-			conn.Read(b)
+			_, err := conn.Read(b)
+			assert.Equal(t, err, io.EOF)
 			atomic.AddInt32(&count, 1)
 			wg.Done()
 		}()
 	}
 
-	err := server.Close()
+	err = server.Close()
 	assert.NoError(t, err)
 
 	wg.Wait()

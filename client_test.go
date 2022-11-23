@@ -18,7 +18,8 @@ func TestClient_read(t *testing.T) {
 		msg_read += message
 	})
 
-	server.Listen()
+	err := server.Listen()
+	assert.NoError(t, err)
 
 	// Connect to server
 	conn, err := net.Dial("tcp", ":9000")
@@ -27,9 +28,11 @@ func TestClient_read(t *testing.T) {
 	}
 
 	// Write some data.
-	conn.Write([]byte{'m', 'o', 'r', 'e', '\n'})
+	_, err = conn.Write([]byte{'m', 'o', 'r', 'e', '\n'})
+	assert.NoError(t, err)
 	time.Sleep(time.Microsecond * 100)
-	conn.Write([]byte{'b', 'e', 'e', 'f', '\n'})
+	_, err = conn.Write([]byte{'b', 'e', 'e', 'f', '\n'})
+	assert.NoError(t, err)
 	time.Sleep(time.Microsecond * 100)
 	conn.Close()
 
@@ -47,7 +50,8 @@ func TestClient_readBuffered(t *testing.T) {
 		msg_read += message
 	})
 
-	server.Listen()
+	err := server.Listen()
+	assert.NoError(t, err)
 
 	// Connect to server
 	conn, err := net.Dial("tcp", ":9000")
@@ -56,11 +60,14 @@ func TestClient_readBuffered(t *testing.T) {
 	}
 
 	// Write some data.
-	conn.Write([]byte{'H', 'e'})
+	_, err = conn.Write([]byte{'H', 'e'})
+	assert.NoError(t, err)
 	time.Sleep(time.Microsecond * 100)
-	conn.Write([]byte{'l', 'l'})
+	_, err = conn.Write([]byte{'l', 'l'})
+	assert.NoError(t, err)
 	time.Sleep(time.Microsecond * 100)
-	conn.Write([]byte{'o', '\n'})
+	_, err = conn.Write([]byte{'o', '\n'})
+	assert.NoError(t, err)
 	time.Sleep(time.Microsecond * 100)
 	conn.Close()
 
