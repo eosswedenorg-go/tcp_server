@@ -28,7 +28,7 @@ func (c *Client) read() {
 	reader := bufio.NewReader(c.conn)
 	for c.Server.running {
 
-		c.conn.SetReadDeadline(time.Now().Add(timeout))
+		_ = c.conn.SetReadDeadline(time.Now().Add(timeout))
 
 		message, err := reader.ReadString('\n')
 		if err != nil {
@@ -48,7 +48,7 @@ func (c *Client) WriteString(message string) (int, error) {
 
 // Write bytes to client
 func (c *Client) Write(b []byte) (int, error) {
-	c.conn.SetWriteDeadline(time.Now().Add(5 * time.Second))
+	_ = c.conn.SetWriteDeadline(time.Now().Add(5 * time.Second))
 	n, err := c.conn.Write(b)
 	if err != nil {
 		c.conn.Close()
