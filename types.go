@@ -14,11 +14,11 @@ type Client struct {
 	Addr net.Addr
 
 	// Pointer to server object.
-	Server *server
+	Server *Server
 }
 
 // Struct that represents a network listener
-type server struct {
+type Server struct {
 	// Actual listener connection
 	listener net.Listener
 

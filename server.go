@@ -4,8 +4,8 @@ import (
 	"net"
 )
 
-func New(address string) *server {
-	server := &server{
+func New(address string) *Server {
+	server := &Server{
 		address: address,
 	}
 
@@ -17,21 +17,21 @@ func New(address string) *server {
 }
 
 // Called when a client connects
-func (s *server) OnConnect(callback func(c *Client)) {
+func (s *Server) OnConnect(callback func(c *Client)) {
 	s.onConnect = callback
 }
 
 // Called the server gets a message from a client.
-func (s *server) OnMessage(callback func(c *Client, message string)) {
+func (s *Server) OnMessage(callback func(c *Client, message string)) {
 	s.onMessage = callback
 }
 
 // Called when a connection is closed.
-func (s *server) OnDisconnect(callback func(c *Client, err error)) {
+func (s *Server) OnDisconnect(callback func(c *Client, err error)) {
 	s.onDisconnect = callback
 }
 
-func (s *server) Connect() error {
+func (s *Server) Connect() error {
 	l, err := net.Listen("tcp", s.address)
 	if err == nil {
 		s.listener = l
@@ -39,11 +39,11 @@ func (s *server) Connect() error {
 	return err
 }
 
-func (s *server) IsStarted() bool {
+func (s *Server) IsStarted() bool {
 	return s.listener != nil
 }
 
-func (s *server) Close() error {
+func (s *Server) Close() error {
 	if !s.IsStarted() {
 		return nil
 	}
@@ -62,7 +62,7 @@ func (s *server) Close() error {
 	return err
 }
 
-func (s *server) listenerLoop() {
+func (s *Server) listenerLoop() {
 	defer s.wg.Done()
 
 	for {
@@ -84,7 +84,7 @@ func (s *server) listenerLoop() {
 	}
 }
 
-func (s *server) Listen() error {
+func (s *Server) Listen() error {
 	if !s.IsStarted() {
 		err := s.Connect()
 		if err != nil {
